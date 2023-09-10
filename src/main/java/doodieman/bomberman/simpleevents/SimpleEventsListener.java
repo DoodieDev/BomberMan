@@ -18,7 +18,11 @@ public class SimpleEventsListener implements Listener {
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
-        event.setFormat("§e"+player.getName()+": §f"+event.getMessage());
+
+        String message = event.getMessage();
+        message = message.replace("%","%%");
+
+        event.setFormat("§e"+player.getName()+": §f"+message);
     }
 
     @EventHandler

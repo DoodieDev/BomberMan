@@ -180,6 +180,7 @@ public class Game {
             //Is outside the border
             if (radius >= currentWorldBorderRadius) {
                 //Damage the player
+                LocationUtil.pushPlayerTowards(player,centerLocation,0.2);
                 double newHealth = player.getHealth() - 1;
                 if (newHealth <= 1)
                     GameUtil.getInstance().handleKillByWorldborder(player);

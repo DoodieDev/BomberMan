@@ -22,6 +22,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -29,6 +30,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.lang.reflect.Constructor;
+import java.util.List;
 
 public class GameUtil {
 
@@ -74,7 +76,9 @@ public class GameUtil {
             return;
 
         //Display messages, particles and titles.
-        Bukkit.broadcastMessage("§c"+victim.getName()+" døde af borderen!");
+        Game game = this.getActiveGame();
+        int playersLeft = game.getPlayers().size() - 1;
+        Bukkit.broadcastMessage("§c"+victim.getName()+" døde af borderen! ("+playersLeft+" tilbage)");
         FunUtil.createBloodParticles(victim.getLocation(),20,60L);
         victim.getWorld().playSound(victim.getLocation(), Sound.DIG_STONE,1f,0.6f);
         PacketUtil.sendTitle(victim,"§cDU DØDE!","§cDræbt af world border",0,60,0);
@@ -102,15 +106,16 @@ public class GameUtil {
             return;
         World world = victim.getWorld();
         GamePlayer attackerGamePlayer = this.getGamePlayer(attacker,game);
+        int playersLeft = game.getPlayers().size() - 1;
 
         //Suicide
         if (attacker.equals(victim)) {
-            Bukkit.broadcastMessage("§c"+victim.getName()+" begik selvmord!");
+            Bukkit.broadcastMessage("§c"+victim.getName()+" begik selvmord! ("+playersLeft+" tilbage)");
             PlayerDataUtil.addPlayerStat(victim,PlayerStat.SUICIDES,1);
         }
         //Attacker and victim are different
         else {
-            Bukkit.broadcastMessage("§c"+victim.getName()+" blev dræbt af "+attacker.getName()+"!");
+            Bukkit.broadcastMessage("§c"+victim.getName()+" blev dræbt af "+attacker.getName()+"! ("+playersLeft+" tilbage)");
             PlayerDataUtil.addPlayerStat(attacker,PlayerStat.KILLS,1);
             if (attackerGamePlayer != null)
                 attackerGamePlayer.addGameStat(PlayerStat.KILLS, 1);
@@ -120,6 +125,7 @@ public class GameUtil {
         FunUtil.createBloodParticles(victim.getLocation(),20,60L);
         world.playSound(victim.getLocation(), Sound.DIG_STONE,1f,0.6f);
         attacker.playSound(attacker.getLocation(),Sound.ORB_PICKUP,1f,1f);
+        this.dropInventory(victim);
 
         //Victim death effect
         victim.setGameMode(GameMode.SPECTATOR);
@@ -240,6 +246,14 @@ public class GameUtil {
                 item.setAmount(itemAmount - amount);
                 amount = 0;
             }
+        }
+    }
+
+    public void dropInventory(Player player) {
+        for (int i = 0; i < player.getInventory().getSize(); i++) {
+            ItemStack item = player.getInventory().getItem(i);
+            if (item == null || item.getType() == Material.AIR) continue;
+            player.getWorld().dropItem(player.getLocation(),item.clone());
         }
     }
 
