@@ -1,0 +1,22 @@
+name: BomberMan
+version: '${project.version}'
+main: doodieman.bomberman.BomberMan
+commands:
+  mapsetup:
+    permission: "*"
+    permission-message: "§cIngen adgang!"
+  stats:
+    description: "Seje stats"
+  spawn:
+    description: "spawn"
+  setwarp:
+    aliases: [createwarp, newwarp]
+    permission: "*"
+    permission-message: "§cIngen adgang!"
+  delwarp:
+    aliases: [deletewarp, removewarp]
+    permission: "*"
+    permission-message: "§cIngen adgang!"
+  warp:
+    permission: "*"
+    permission-message: "§cIngen adgang!"
