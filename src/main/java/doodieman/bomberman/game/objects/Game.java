@@ -12,6 +12,7 @@ import doodieman.bomberman.utils.LocationUtil;
 import doodieman.bomberman.utils.PacketUtil;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -146,17 +147,16 @@ public class Game {
                 currentWorldBorderRadius = worldBorderMaxRadius - (((double) tick / shrinkingTime) * worldBorderMaxRadius);
 
                 //Display the border particles
-                int displayPoints = (int) Math.ceil(currentWorldBorderRadius) * 7;
+                int displayPoints = 200;
                 for (int point = 0; point < displayPoints; point++) {
                     double angle = (point * (360f / displayPoints)) + angleOffset;
                     Location location = LocationUtil.getLocationInCircle(center,angle,currentWorldBorderRadius);
 
                     for (Player player : Bukkit.getOnlinePlayers()) {
-                        int particleRadius = 15;
-                        //If player is not in-game, then make the visible range 100 blocks
-                        if (GameUtil.getInstance().getGamePlayer(player,Game.this) == null)
-                            particleRadius = 100;
-                        player.spigot().playEffect(location, Effect.WITCH_MAGIC,0,0,0,0,0,0,1,particleRadius);
+                        for (int i = 0; i < 2; i++) {
+                            Location offsetLocation = location.clone().add(0,i * 0.3,0);
+                            PacketUtil.sendRedstoneParticle(player,offsetLocation, Color.fromRGB(189, 11, 183));
+                        }
                     }
                 }
                 this.angleOffset += 1;

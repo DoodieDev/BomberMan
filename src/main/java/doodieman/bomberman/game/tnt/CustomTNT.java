@@ -8,8 +8,11 @@ import doodieman.bomberman.game.objects.GamePlayer;
 import doodieman.bomberman.playerdata.PlayerDataUtil;
 import doodieman.bomberman.playerdata.PlayerStat;
 import doodieman.bomberman.utils.LocationUtil;
+import doodieman.bomberman.utils.PacketUtil;
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -148,30 +151,35 @@ public abstract class CustomTNT {
     public void playRippleEffect() {
         List<Material> clearBlockTypes = this.getClearBlocks();
 
-        int particlesPerLine = 2 * (int) Math.round(this.getRealRadius()); //How many points till it hits outer circle.
-        int lineAmount = 13 * (int) Math.round(this.getRealRadius()); //How many particles in one circle. Total particles is (pulseAmount * particleAmount)
+        double realRadius = this.getRealRadius();
+        int particlesPerLine = 2 * (int) Math.round(realRadius); //How many points till it hits outer circle.
+        int lineAmount = 13 * (int) Math.round(realRadius); //How many particles in one circle. Total particles is (pulseAmount * particleAmount)
+        Location centerLocation = this.getCenterLocation();
 
+        //Send lines of particles out in every direction
         for (int line = 0; line < lineAmount; line++) {
 
             double angle = (line * (360f / lineAmount));
 
+            //Playout each particle in the line
             for (int particle = 0; particle <= particlesPerLine; particle++) {
-                double range = ((double) particle / particlesPerLine) * this.getRealRadius();
-                Location location = LocationUtil.getLocationInCircle(this.getCenterLocation(),angle,range);
+
+                double range = ((double) particle / particlesPerLine) * realRadius;
+                Location location = LocationUtil.getLocationInCircle(centerLocation,angle,range);
                 Block blockAt = location.getBlock();
 
                 if (!clearBlockTypes.contains(blockAt.getType()))
                     break;
-
                 if (!canSeeLocation(location))
                     break;
 
-                location.getWorld().spigot().playEffect(location,Effect.FLAME,0,0,0,0,0,0,1,50);
+                //Play the redstone particle for every player
+                for (Player p : Bukkit.getOnlinePlayers())
+                    PacketUtil.sendRedstoneParticle(p,location, Color.fromRGB(255, 0, 0));
 
-                //Last particle in line
-                if (particle == particlesPerLine) {
+                //Last particle in line - Explosion effect
+                if (particle == particlesPerLine)
                     location.getWorld().spigot().playEffect(location,Effect.EXPLOSION,0,0,0,0,0,0,1,50);
-                }
             }
         }
 
@@ -220,7 +228,6 @@ public abstract class CustomTNT {
                 //Sound
                 float pitch = (float) ((double) tick / fuseTicks);
                 location.getWorld().playSound(location, Sound.ENDERDRAGON_WINGS, 0.05F, pitch);
-                location.getWorld().spigot().playEffect(asLocation.clone().add(0,1.5,0), Effect.SMALL_SMOKE,0,0,0,0,0,0,1,30);
             }
         }.runTaskTimer(BomberMan.getInstance(), 1L, 1L);
     }
@@ -283,8 +290,8 @@ public abstract class CustomTNT {
         //Loop all points
         for (int i = 0; i <= totalPoints; i++) {
             double distance = i * distancePerPoint;
-
             List<Block> blocksAt = new ArrayList<>();
+
             for (Location loc : blockLocations) {
                 Location loc_closer = LocationUtil.moveCloser(loc, centerLocation, distance);
                 blocksAt.add(world.getBlockAt(loc_closer));
@@ -292,9 +299,11 @@ public abstract class CustomTNT {
 
             //Go through blocks spotted
             for (Block blockAt : blocksAt) {
-                if (isWithinTolerance(blockAt.getLocation(), originalLocation.getBlock().getLocation(), 0.001))
-                    continue;
+                Location blockLocation = blockAt.getLocation();
+                Location originalBlockLocation = originalLocation.getBlock().getLocation();
 
+                if (isWithinTolerance(blockLocation, originalBlockLocation, 0.001))
+                    continue;
                 if (!clearBlockTypes.contains(blockAt.getType()))
                     return false;
             }
