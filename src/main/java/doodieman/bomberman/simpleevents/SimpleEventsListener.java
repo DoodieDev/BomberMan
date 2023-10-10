@@ -1,5 +1,7 @@
 package doodieman.bomberman.simpleevents;
 
+import doodieman.bomberman.ranking.RankingUtil;
+import doodieman.bomberman.ranking.enums.Rank;
 import doodieman.bomberman.utils.LabyModUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -13,6 +15,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.weather.ThunderChangeEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class SimpleEventsListener implements Listener {
 
     @EventHandler
@@ -22,7 +27,8 @@ public class SimpleEventsListener implements Listener {
         String message = event.getMessage();
         message = message.replace("%","%%");
 
-        event.setFormat("§e"+player.getName()+": §f"+message);
+        Rank rank = RankingUtil.getRank(player);
+        event.setFormat(rank.getColor()+"["+rank.getName()+"] "+player.getName()+": §f"+message);
     }
 
     @EventHandler
@@ -56,7 +62,10 @@ public class SimpleEventsListener implements Listener {
         else
             event.setJoinMessage("§8[§a+§8] §a"+player.getName());
 
-        LabyModUtil.sendCurrentPlayingGamemode(player,true,"§cBombe minigame");
+        RankingUtil.updateRankSubtitle(player);
+        for (Player p : Bukkit.getOnlinePlayers())
+            RankingUtil.updateRankSubtitleFor(p,player);
+
     }
 
     @EventHandler

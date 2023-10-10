@@ -25,13 +25,13 @@ public class StatsCommand implements CommandExecutor {
         }
 
         String targetString = args[0];
-        OfflinePlayer target = Bukkit.getOfflinePlayer(targetString);
-        if (target == null || !target.hasPlayedBefore()) {
+        OfflinePlayer targetOffline = Bukkit.getOfflinePlayer(targetString);
+        if (targetOffline == null || !targetOffline.hasPlayedBefore()) {
             player.sendMessage("§cDen spiller har aldrig været inde før!");
             return true;
         }
 
-        this.showPlayerStats(target,player);
+        this.showPlayerStats(targetOffline,player);
 
         return true;
     }
@@ -41,6 +41,7 @@ public class StatsCommand implements CommandExecutor {
         receiver.sendMessage("§6Viser §6§l"+statsPlayer.getName()+"§6's stats:");
         receiver.sendMessage("");
         for (PlayerStat stat : PlayerStat.values()) {
+            if (!stat.isShow() && !receiver.isOp()) continue;
             receiver.sendMessage("§f- "+ PlayerDataUtil.getPlayerStatFormatted(statsPlayer,stat));
         }
 

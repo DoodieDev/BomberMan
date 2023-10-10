@@ -12,6 +12,7 @@ import doodieman.bomberman.maphandler.MapUtil;
 import doodieman.bomberman.maphandler.objects.GameMap;
 import doodieman.bomberman.playerdata.PlayerDataUtil;
 import doodieman.bomberman.playerdata.PlayerStat;
+import doodieman.bomberman.ranking.RankingHandler;
 import doodieman.bomberman.utils.FunUtil;
 import doodieman.bomberman.utils.PacketUtil;
 import doodieman.bomberman.utils.StringUtil;
@@ -75,8 +76,9 @@ public class GameUtil {
         if (!this.isInGame(victim))
             return;
 
-        //Display messages, particles and titles.
         Game game = this.getActiveGame();
+
+        //Display messages, particles and titles.
         int playersLeft = game.getPlayers().size() - 1;
         Bukkit.broadcastMessage("§c"+victim.getName()+" døde af borderen! ("+playersLeft+" tilbage)");
         FunUtil.createBloodParticles(victim.getLocation(),20,60L);
@@ -95,7 +97,7 @@ public class GameUtil {
         }.runTaskLater(BomberMan.getInstance(),60L);
 
         //Remove player
-        this.getActiveGame().removePlayer(victim);
+        game.removePlayer(victim);
     }
 
     public void handleKill(Player attacker, Player victim) {
@@ -105,6 +107,7 @@ public class GameUtil {
         Game game = this.getActiveGame();
         if (!game.isGameActive())
             return;
+
         World world = victim.getWorld();
         GamePlayer attackerGamePlayer = this.getGamePlayer(attacker,game);
         int playersLeft = game.getPlayers().size() - 1;
@@ -142,6 +145,7 @@ public class GameUtil {
 
         //Remove player
         game.removePlayer(victim);
+
         PlayerDataUtil.addPlayerStat(victim,PlayerStat.DEATHS,1);
     }
 

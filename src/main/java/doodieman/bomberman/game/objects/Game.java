@@ -7,13 +7,14 @@ import doodieman.bomberman.game.tnt.CustomTNT;
 import doodieman.bomberman.lobby.LobbyUtil;
 import doodieman.bomberman.maphandler.MapUtil;
 import doodieman.bomberman.maphandler.objects.GameMap;
+import doodieman.bomberman.ranking.RankingHandler;
+import doodieman.bomberman.ranking.RankingUtil;
 import doodieman.bomberman.spawn.SpawnUtil;
 import doodieman.bomberman.utils.LocationUtil;
 import doodieman.bomberman.utils.PacketUtil;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
-import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -71,6 +72,7 @@ public class Game {
 
     //Remove a player from the game... eg, kill the player
     public void removePlayer(Player player) {
+
         GamePlayer gamePlayer = GameUtil.getInstance().getGamePlayer(player,this);
         if (gamePlayer == null)
             return;
@@ -82,6 +84,7 @@ public class Game {
 
             GamePlayer winner = this.players.get(0);
             GameUtil.getInstance().handleWinner(winner);
+            RankingHandler.getInstance().gameFinished(this);
 
             //Stop the game after 5 seconds
             new BukkitRunnable() {
@@ -90,11 +93,14 @@ public class Game {
                     stop();
                 }
             }.runTaskLater(BomberMan.getInstance(),60L);
+        } else if (gameActive) {
+            RankingHandler.getInstance().leaveGame(gamePlayer);
         }
     }
 
     //Starts the game
     public void start() {
+        RankingHandler.getInstance().gameStarted(this);
         this.gameActive = true;
         this.startShrinking();
     }

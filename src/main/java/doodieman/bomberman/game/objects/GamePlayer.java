@@ -2,6 +2,7 @@ package doodieman.bomberman.game.objects;
 
 import doodieman.bomberman.playerdata.PlayerStat;
 import lombok.Getter;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
