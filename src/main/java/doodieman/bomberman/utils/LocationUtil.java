@@ -126,14 +126,23 @@ public class LocationUtil {
         return new Location(loc.getWorld(), x, loc.getY(), z);
     }
 
-    public static double getAngleToLocation(Location center, Location target) {
-        double deltaX = target.getX() - center.getX();
-        double deltaZ = target.getZ() - center.getZ();
+    public static double getAngleToLocation(Location fromLoc, Location toLoc) {
+        // Calculate the vector from 'fromLoc' to 'toLoc'
+        double deltaX = toLoc.getX() - fromLoc.getX();
+        double deltaZ = toLoc.getZ() - fromLoc.getZ();
+
+        // Calculate the angle in radians
         double angle = Math.atan2(deltaZ, deltaX);
-        angle = Math.toDegrees(angle);
-        if (angle < 0)
-            angle += 360;
-        return angle;
+
+        // Ensure the angle is between 0 and 2*PI
+        if (angle < 0) {
+            angle += 2 * Math.PI;
+        }
+
+        // Convert radians to degrees
+        double degrees = angle * 180 / Math.PI;
+
+        return degrees;
     }
 
     public static Block getTargetBlock(Player player, int range) {

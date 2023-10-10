@@ -83,6 +83,7 @@ public class GameUtil {
         victim.getWorld().playSound(victim.getLocation(), Sound.DIG_STONE,1f,0.6f);
         PacketUtil.sendTitle(victim,"§cDU DØDE!","§cDræbt af world border",0,60,0);
 
+        victim.getWorld().strikeLightningEffect(victim.getLocation());
         victim.setGameMode(GameMode.SPECTATOR);
 
         //Teleport to lobby after 3 seconds
@@ -126,6 +127,7 @@ public class GameUtil {
         world.playSound(victim.getLocation(), Sound.DIG_STONE,1f,0.6f);
         attacker.playSound(attacker.getLocation(),Sound.ORB_PICKUP,1f,1f);
         this.dropInventory(victim);
+        victim.getWorld().strikeLightningEffect(victim.getLocation());
 
         //Victim death effect
         victim.setGameMode(GameMode.SPECTATOR);

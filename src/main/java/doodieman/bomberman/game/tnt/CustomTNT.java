@@ -149,43 +149,37 @@ public abstract class CustomTNT {
     }
 
     public void playRippleEffect() {
-        List<Material> clearBlockTypes = this.getClearBlocks();
 
         double realRadius = this.getRealRadius();
-        int particlesPerLine = 2 * (int) Math.round(realRadius); //How many points till it hits outer circle.
-        int lineAmount = 13 * (int) Math.round(realRadius); //How many particles in one circle. Total particles is (pulseAmount * particleAmount)
+        int particlesPerLine = 2 * (int) Math.round(realRadius);
+        int lineAmount = 13 * (int) Math.round(realRadius);
         Location centerLocation = this.getCenterLocation();
+        World world = centerLocation.getWorld();
 
         //Send lines of particles out in every direction
         for (int line = 0; line < lineAmount; line++) {
 
             double angle = (line * (360f / lineAmount));
+            double maxLineRadius = this.getVisibleRadius(angle,realRadius);
 
             //Playout each particle in the line
             for (int particle = 0; particle <= particlesPerLine; particle++) {
 
-                double range = ((double) particle / particlesPerLine) * realRadius;
-                Location location = LocationUtil.getLocationInCircle(centerLocation,angle,range);
-                Block blockAt = location.getBlock();
+                double radius = (realRadius / particlesPerLine) * particle;
+                if (radius > maxLineRadius)
+                    break;
 
-                if (!clearBlockTypes.contains(blockAt.getType()))
-                    break;
-                if (!canSeeLocation(location))
-                    break;
+                Location particleLocation = LocationUtil.getLocationInCircle(centerLocation,angle,radius);
 
                 //Play the redstone particle for every player
                 for (Player p : Bukkit.getOnlinePlayers())
-                    PacketUtil.sendRedstoneParticle(p,location, Color.fromRGB(255, 0, 0));
+                    PacketUtil.sendRedstoneParticle(p,particleLocation, Color.fromRGB(255, 0, 0));
 
                 //Last particle in line - Explosion effect
                 if (particle == particlesPerLine)
-                    location.getWorld().spigot().playEffect(location,Effect.EXPLOSION,0,0,0,0,0,0,1,50);
+                    world.spigot().playEffect(particleLocation,Effect.EXPLOSION,0,0,0,0,0,0,1,50);
             }
         }
-
-
-
-
     }
 
     //Start the fusing timer. (Rotate animation)
@@ -269,21 +263,21 @@ public abstract class CustomTNT {
     }
 
     //Checks if the TNT can see a block.
-    public boolean canSeeLocation(Location originalLocation) {
-        World world = originalLocation.getWorld();
+    public boolean canSeeLocation(Location targetLocation) {
+        World world = targetLocation.getWorld();
 
         Location centerLocation = this.location.clone().add(0.5, 0, 0.5);
 
         List<Location> blockLocations = Arrays.asList(
-            originalLocation.clone().add(0.07, 0, 0.07),
-            originalLocation.clone().add(-0.07, 0, 0.07),
-            originalLocation.clone().add(-0.07, 0, -0.07),
-            originalLocation.clone().add(0.07, 0, -0.07)
+            targetLocation.clone().add(0.07, 0, 0.07),
+            targetLocation.clone().add(-0.07, 0, 0.07),
+            targetLocation.clone().add(-0.07, 0, -0.07),
+            targetLocation.clone().add(0.07, 0, -0.07)
         );
 
         List<Material> clearBlockTypes = this.getClearBlocks();
 
-        double maxDistance = originalLocation.distance(centerLocation);
+        double maxDistance = targetLocation.distance(centerLocation);
         int totalPoints = (int) Math.ceil(maxDistance * 20);
         double distancePerPoint = maxDistance / totalPoints;
 
@@ -300,7 +294,7 @@ public abstract class CustomTNT {
             //Go through blocks spotted
             for (Block blockAt : blocksAt) {
                 Location blockLocation = blockAt.getLocation();
-                Location originalBlockLocation = originalLocation.getBlock().getLocation();
+                Location originalBlockLocation = targetLocation.getBlock().getLocation();
 
                 if (isWithinTolerance(blockLocation, originalBlockLocation, 0.001))
                     continue;
@@ -308,9 +302,49 @@ public abstract class CustomTNT {
                     return false;
             }
         }
-
         return true;
     }
+
+    //Get the visible radius in an angle from the bomb.
+    public double getVisibleRadius(double angle, double maxRadius) {
+        Location centerLocation = this.getCenterLocation();
+        Location targetLocation = LocationUtil.getLocationInCircle(centerLocation,angle,maxRadius);
+
+        World world = targetLocation.getWorld();
+
+        List<Location> centerOffsetLocations = Arrays.asList(
+            centerLocation.clone().add(0.07, 0, 0.07),
+            centerLocation.clone().add(-0.07, 0, 0.07),
+            centerLocation.clone().add(-0.07, 0, -0.07),
+            centerLocation.clone().add(0.07, 0, -0.07)
+        );
+
+        List<Material> clearBlockTypes = this.getClearBlocks();
+        int totalPoints = (int) Math.ceil(maxRadius * 20);
+        double distancePerPoint = maxRadius / totalPoints;
+
+        //Go through points between target and center
+        for (int i = 0; i <= totalPoints; i++) {
+            double radius = i * distancePerPoint;
+
+            //Get all blocks in radius of the point (0.07 radius)
+            List<Block> blocksAt = new ArrayList<>();
+            for (Location loc : centerOffsetLocations) {
+                Location loc_closer = LocationUtil.moveCloser(loc, targetLocation, radius);
+                blocksAt.add(world.getBlockAt(loc_closer));
+            }
+
+            //Go through blocks spotted
+            for (Block blockAt : blocksAt) {
+
+                //If it detects a block that is not 'clear'. - Stop and return the radius.
+                if (!clearBlockTypes.contains(blockAt.getType()))
+                    return radius;
+            }
+        }
+        return maxRadius;
+    }
+
     private boolean isWithinTolerance(Location loc1, Location loc2, double tolerance) {
         return Math.abs(loc1.getX() - loc2.getX()) < tolerance
             && Math.abs(loc1.getY() - loc2.getY()) < tolerance
