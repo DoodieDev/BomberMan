@@ -11,6 +11,7 @@ import doodieman.bomberman.mapsetup.command.MapSetupCommand;
 import doodieman.bomberman.playerdata.PlayerDataHandler;
 import doodieman.bomberman.playerdata.command.StatsCommand;
 import doodieman.bomberman.ranking.RankingHandler;
+import doodieman.bomberman.simplecommands.DiscordCommand;
 import doodieman.bomberman.simpleevents.SimpleEventsListener;
 import doodieman.bomberman.spawn.SpawnCommand;
 import doodieman.bomberman.warp.commands.DeleteWarpCommand;
@@ -68,6 +69,7 @@ public final class BomberMan extends JavaPlugin {
         this.getCommand("warp").setExecutor(new WarpCommand());
         this.getCommand("spawn").setExecutor(new SpawnCommand());
         this.getCommand("stats").setExecutor(new StatsCommand());
+        this.getCommand("discord").setExecutor(new DiscordCommand());
 
         //Handlers
         new MapSetupHandler();

@@ -9,6 +9,8 @@ commands:
     description: "Seje stats"
   spawn:
     description: "spawn"
+  discord:
+    description: "Discord command"
   setwarp:
     aliases: [createwarp, newwarp]
     permission: "*"
