@@ -4,16 +4,11 @@ import lombok.Getter;
 
 public enum EloModifiers {
 
-    LOW_ELO(1000),
-    HIGH_ELO(10000),
-
-    KILL_VALUE(15),
-    EXPECTED_KILLS_LOW(0.01),
-    EXPECTED_KILLS_HIGH(10),
-
-    WIN_VALUE(75),
-    EXPECTED_WINS_LOW(0.01),
-    EXPECTED_WINS_HIGH(1);
+    MAX_ELO_GAIN(50),
+    SIDE_DIFFERENCE(10),
+    ELO_LOSE_PERCENT(0.025),
+    MIN_PLAYERS(10),
+    KILLS_WORTH(10);
 
     @Getter
     private final double value;
@@ -22,16 +17,27 @@ public enum EloModifiers {
         this.value = value;
     }
 
-    public static double getExpectedKills(double elo) {
-        double x1 = LOW_ELO.value;
-        double y1 = EXPECTED_KILLS_LOW.value;
-        return y1 + ((elo - x1) / (HIGH_ELO.value - x1)) * (EXPECTED_KILLS_HIGH.value - y1);
-    }
+    public static double getGain(double current_elo, int placement, int max_players, int kills) {
 
-    public static double getExpectedWins(double elo) {
-        double x1 = LOW_ELO.value;
-        double y1 = EXPECTED_WINS_LOW.value;
-        return y1 + ((elo - x1) / (HIGH_ELO.value - x1)) * (EXPECTED_WINS_HIGH.value - y1);
+        //The maximum ELO the player can lose
+        double max_lose_amount = current_elo * ELO_LOSE_PERCENT.value;
+        //The placement percent. - The higher the better
+        double placement_percent = 0.5 - (double) (placement - 1) / (max_players - 1);
+
+        double result;
+        if (placement_percent > 0 ) {
+            result = ((placement_percent / 0.5) * MAX_ELO_GAIN.value) + SIDE_DIFFERENCE.value;
+            result += kills * KILLS_WORTH.value;
+        }
+
+        else {
+            result = ((placement_percent / 0.5) * max_lose_amount) - SIDE_DIFFERENCE.value;
+            result += kills * KILLS_WORTH.value;
+            result = result > 0 ? 0 : result;
+        }
+
+        double justifier = MIN_PLAYERS.value > max_players ? max_players / MIN_PLAYERS.value : 1;
+        return result * justifier;
     }
 
 }

@@ -2,6 +2,7 @@ package doodieman.bomberman.game.objects;
 
 import doodieman.bomberman.playerdata.PlayerStat;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -12,8 +13,11 @@ public class GamePlayer {
 
     @Getter
     private final Player player;
-    final Game game;
+    @Getter
+    private final Game game;
     private final Map<PlayerStat, Double> gameStats;
+    @Getter @Setter
+    private int placement;
 
     public GamePlayer(Player player, Game game) {
         this.player = player;

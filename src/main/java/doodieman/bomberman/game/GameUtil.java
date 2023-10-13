@@ -145,7 +145,6 @@ public class GameUtil {
 
         //Remove player
         game.removePlayer(victim);
-
         PlayerDataUtil.addPlayerStat(victim,PlayerStat.DEATHS,1);
     }
 

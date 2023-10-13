@@ -1,7 +1,8 @@
-package doodieman.bomberman.playerdata.command;
+package doodieman.bomberman.simplecommands;
 
 import doodieman.bomberman.playerdata.PlayerDataUtil;
 import doodieman.bomberman.playerdata.PlayerStat;
+import doodieman.bomberman.utils.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;

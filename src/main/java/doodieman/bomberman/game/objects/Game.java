@@ -8,11 +8,11 @@ import doodieman.bomberman.lobby.LobbyUtil;
 import doodieman.bomberman.maphandler.MapUtil;
 import doodieman.bomberman.maphandler.objects.GameMap;
 import doodieman.bomberman.ranking.RankingHandler;
-import doodieman.bomberman.ranking.RankingUtil;
 import doodieman.bomberman.spawn.SpawnUtil;
 import doodieman.bomberman.utils.LocationUtil;
 import doodieman.bomberman.utils.PacketUtil;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -42,6 +42,8 @@ public class Game {
     private double currentWorldBorderRadius;
     @Getter
     private final Location center;
+    @Getter @Setter
+    private int maxPlayers;
 
     public Game(GameMap map) {
         this.map = map;
@@ -51,6 +53,7 @@ public class Game {
         this.placedTNTs = new ArrayList<>();
         this.center = map.getCenterLocation();
         this.center.setY(map.getSpawnPoints().get(0).getY() + 0.1);
+        this.maxPlayers = 0;
         this.worldBorderMaxRadius = MapUtil.getInstance().getLocationFromOffset(map.getCorner1()).distance(map.getCenterLocation());
         this.currentWorldBorderRadius = worldBorderMaxRadius;
     }
@@ -68,15 +71,18 @@ public class Game {
         this.freeSpawnPoints.remove(randomIndex);
         //Add
         this.players.add(gamePlayer);
+        this.maxPlayers++;
     }
 
     //Remove a player from the game... eg, kill the player
     public void removePlayer(Player player) {
-
         GamePlayer gamePlayer = GameUtil.getInstance().getGamePlayer(player,this);
         if (gamePlayer == null)
             return;
+        gamePlayer.setPlacement(this.getPlayers().size());
         this.players.remove(gamePlayer);
+
+        RankingHandler.getInstance().leaveGame(gamePlayer);
 
         //Only one player left, handle the winner
         if (this.players.size() < 2 && gameActive) {
@@ -84,7 +90,6 @@ public class Game {
 
             GamePlayer winner = this.players.get(0);
             GameUtil.getInstance().handleWinner(winner);
-            RankingHandler.getInstance().gameFinished(this);
 
             //Stop the game after 5 seconds
             new BukkitRunnable() {
@@ -93,14 +98,12 @@ public class Game {
                     stop();
                 }
             }.runTaskLater(BomberMan.getInstance(),60L);
-        } else if (gameActive) {
-            RankingHandler.getInstance().leaveGame(gamePlayer);
+
         }
     }
 
     //Starts the game
     public void start() {
-        RankingHandler.getInstance().gameStarted(this);
         this.gameActive = true;
         this.startShrinking();
     }

@@ -37,7 +37,7 @@ public class PlayerDataUtil {
         return config.getDouble("stats."+stat.getId(),stat.getDefaultValue());
     }
     public static String getPlayerStatFormatted(OfflinePlayer player, PlayerStat stat) {
-        String formattedValue = StringUtil.formatNum(getPlayerStat(player,stat));
+        String formattedValue = StringUtil.formatNum(Math.round(getPlayerStat(player,stat)));
         return stat.getColorCode() + formattedValue +" "+ stat.getFancyText();
     }
 

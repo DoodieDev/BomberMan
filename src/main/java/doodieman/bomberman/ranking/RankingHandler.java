@@ -5,6 +5,7 @@ import doodieman.bomberman.game.objects.GamePlayer;
 import doodieman.bomberman.playerdata.PlayerDataUtil;
 import doodieman.bomberman.playerdata.PlayerStat;
 import doodieman.bomberman.ranking.enums.EloModifiers;
+import doodieman.bomberman.utils.StringUtil;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -21,39 +22,39 @@ public class RankingHandler {
             RankingUtil.updateRankSubtitle(p);
     }
 
-    public void gameStarted(Game game) {
-
-    }
-
-    public void gameFinished(Game game) {
-
-        GamePlayer winner = game.getPlayers().get(0);
-        this.handleEloResult(winner,false);
-    }
-
     public void leaveGame(GamePlayer gamePlayer) {
-        this.handleEloResult(gamePlayer,false);
+        this.handleEloResult(gamePlayer);
     }
 
-    public void handleEloResult(GamePlayer gamePlayer, boolean wonGame) {
+    public void handleEloResult(GamePlayer gamePlayer) {
+        Game game = gamePlayer.getGame();
         Player player = gamePlayer.getPlayer();
 
         double current_elo = PlayerDataUtil.getPlayerStat(player,PlayerStat.ELO);
-        double kills = gamePlayer.getGameStat(PlayerStat.KILLS);
-        double won = wonGame ? 1 : 0;
+        int kills = (int) gamePlayer.getGameStat(PlayerStat.KILLS);
+        int max_players = game.getMaxPlayers();
+        int placement = gamePlayer.getPlacement();
 
-        double expected_kills = EloModifiers.getExpectedKills(current_elo);
-        double expected_wins = EloModifiers.getExpectedWins(current_elo);
+        double elo_gain = EloModifiers.getGain(current_elo, placement, max_players, kills);
+        double new_elo = current_elo + elo_gain;
 
-        double result_kills = (kills - expected_kills) * EloModifiers.KILL_VALUE.getValue();
-        double result_wins = (won - expected_wins) * EloModifiers.WIN_VALUE.getValue();
-        double result = current_elo + result_kills + result_wins;
+        if (new_elo < 1000)
+            new_elo = 1000;
 
-        if (result <= 1000)
-            result = 1000;
+        String formattedElo = StringUtil.formatNum(Math.round(Math.abs(elo_gain)));
+        player.sendMessage("");
+        if (elo_gain > 0) {
+            player.sendMessage("§eDu modtog §a§n"+formattedElo+" ELO§e denne runde!");
+        } else if (elo_gain == 0) {
+            player.sendMessage("§eDu modtog §7§n"+formattedElo+" ELO§e denne runde!");
+        } else {
+            player.sendMessage("§eDu mistede §c§n"+formattedElo+" ELO§e denne runde!");
+        }
+        player.sendMessage("");
 
-        PlayerDataUtil.setPlayerStat(player, PlayerStat.ELO, result);
+        //PlayerDataUtil.setPlayerStat(player, PlayerStat.ELO, result);
         RankingUtil.updateRankSubtitle(player);
+        PlayerDataUtil.setPlayerStat(player,PlayerStat.ELO, new_elo);
     }
 
 }

@@ -1,6 +1,5 @@
 package doodieman.bomberman;
 
-import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import doodieman.bomberman.game.GameHandler;
 import doodieman.bomberman.gameworld.GameWorldHandler;
@@ -9,7 +8,7 @@ import doodieman.bomberman.maphandler.MapHandler;
 import doodieman.bomberman.mapsetup.MapSetupHandler;
 import doodieman.bomberman.mapsetup.command.MapSetupCommand;
 import doodieman.bomberman.playerdata.PlayerDataHandler;
-import doodieman.bomberman.playerdata.command.StatsCommand;
+import doodieman.bomberman.simplecommands.StatsCommand;
 import doodieman.bomberman.ranking.RankingHandler;
 import doodieman.bomberman.simplecommands.DiscordCommand;
 import doodieman.bomberman.simpleevents.SimpleEventsListener;
