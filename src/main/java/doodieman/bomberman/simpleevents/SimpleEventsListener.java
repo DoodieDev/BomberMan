@@ -2,6 +2,8 @@ package doodieman.bomberman.simpleevents;
 
 import doodieman.bomberman.ranking.RankingUtil;
 import doodieman.bomberman.ranking.enums.Rank;
+import doodieman.bomberman.scoreboard.PlayerScoreboard;
+import doodieman.bomberman.scoreboard.ScoreboardHandler;
 import doodieman.bomberman.utils.LabyModUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -62,10 +64,12 @@ public class SimpleEventsListener implements Listener {
         else
             event.setJoinMessage("§8[§a+§8] §a"+player.getName());
 
+        //Register scoreboard
+        ScoreboardHandler.getInstance().createScoreboard(player);
+        //Update labymod subtitle
         RankingUtil.updateRankSubtitle(player);
         for (Player p : Bukkit.getOnlinePlayers())
             RankingUtil.updateRankSubtitleFor(p,player);
-
     }
 
     @EventHandler

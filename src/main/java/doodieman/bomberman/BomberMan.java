@@ -8,6 +8,7 @@ import doodieman.bomberman.maphandler.MapHandler;
 import doodieman.bomberman.mapsetup.MapSetupHandler;
 import doodieman.bomberman.mapsetup.command.MapSetupCommand;
 import doodieman.bomberman.playerdata.PlayerDataHandler;
+import doodieman.bomberman.scoreboard.ScoreboardHandler;
 import doodieman.bomberman.simplecommands.StatsCommand;
 import doodieman.bomberman.ranking.RankingHandler;
 import doodieman.bomberman.simplecommands.DiscordCommand;
@@ -42,6 +43,8 @@ public final class BomberMan extends JavaPlugin {
     private PlayerDataHandler playerDataHandler;
     @Getter
     private RankingHandler rankingHandler;
+    @Getter
+    private ScoreboardHandler scoreboardHandler;
 
     @Getter
     private FileConfiguration dataConfig;
@@ -79,6 +82,7 @@ public final class BomberMan extends JavaPlugin {
         this.lobbyHandler = new LobbyHandler();
         this.gameHandler = new GameHandler();
         this.rankingHandler = new RankingHandler();
+        this.scoreboardHandler = new ScoreboardHandler();
 
         //Events
         Bukkit.getPluginManager().registerEvents(new SimpleEventsListener(),this);
