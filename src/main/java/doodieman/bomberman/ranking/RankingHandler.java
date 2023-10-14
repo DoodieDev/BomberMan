@@ -44,17 +44,19 @@ public class RankingHandler {
         String formattedElo = StringUtil.formatNum(Math.round(Math.abs(elo_gain)));
         player.sendMessage("");
         if (elo_gain > 0) {
-            player.sendMessage("§eDu modtog §a§n"+formattedElo+" ELO§e denne runde!");
+            player.sendMessage("§eDu modtog §a"+formattedElo+" ELO§e denne runde!");
         } else if (elo_gain == 0) {
-            player.sendMessage("§eDu modtog §7§n"+formattedElo+" ELO§e denne runde!");
+            player.sendMessage("§eDu modtog §7"+formattedElo+" ELO§e denne runde!");
         } else {
-            player.sendMessage("§eDu mistede §c§n"+formattedElo+" ELO§e denne runde!");
+            player.sendMessage("§eDu mistede §c"+formattedElo+" ELO§e denne runde!");
         }
+        player.sendMessage("§eDrab: §f"+kills+" "+(kills == 1 ? "spiller" : "spillere"));
+        player.sendMessage("§ePlads: §6#§6§l"+placement+" §eud af §6#§6§l"+max_players);
         player.sendMessage("");
 
         //PlayerDataUtil.setPlayerStat(player, PlayerStat.ELO, result);
-        RankingUtil.updateRankSubtitle(player);
         PlayerDataUtil.setPlayerStat(player,PlayerStat.ELO, new_elo);
+        RankingUtil.updateRankSubtitle(player);
     }
 
 }

@@ -4,7 +4,7 @@ import lombok.Getter;
 
 public enum EloModifiers {
 
-    MAX_ELO_GAIN(50),
+    MAX_ELO_GAIN(35),
     SIDE_DIFFERENCE(10),
     ELO_LOSE_PERCENT(0.025),
     MIN_PLAYERS(10),
