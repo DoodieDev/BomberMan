@@ -1,5 +1,7 @@
 # BomberMan Minecraft Minigame
 
+⚠️ **This plugin was not developed with the intention of being plug-and-play for every server. It was intentionally only designed for one particular server.**
+
 Dive into the explosive world of BomberMan, a Minecraft minigame that pays homage to the classic BomberMan game. Experience an exhilarating blend of strategy and excitement as players are teleported into a custom-built map, where their primary objective is to blast their way through obstacles and opponents alike.
 
 - Each match is a new adventure, thanks to an array of bomb types that ensure no two games are the same.
@@ -21,4 +23,4 @@ Dive into the explosive world of BomberMan, a Minecraft minigame that pays homag
 - "Smut" *Does not damage, only pushes the players away.*
 - "NTN" *Does not damage, it places blocks randomly.*
 
-![Players fighting](https://cdn.discordapp.com/attachments/880457086016847882/1172590431062720533/ezgif-1-965b1b3e75.gif?ex=6560def0&is=654e69f0&hm=dfb6834e583e08012a5d81a12f8b12507eaf00b12b496f6bdf41cd3e35773e83&)
+![All the bombs](https://cdn.discordapp.com/attachments/880457086016847882/1172618343870631997/ezgif-4-9a24d782f6.gif?ex=6560f8ef&is=654e83ef&hm=7bd863fb9fe70afe83d39e37ac52b3793f94e74e35bbdf5892523cff243deb05&)
