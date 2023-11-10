@@ -23,4 +23,5 @@ Dive into the explosive world of BomberMan, a Minecraft minigame that pays homag
 - "Smut" *Does not damage, only pushes the players away.*
 - "NTN" *Does not damage, it places blocks randomly.*
 
-![All the bombs](https://cdn.discordapp.com/attachments/880457086016847882/1172618343870631997/ezgif-4-9a24d782f6.gif?ex=6560f8ef&is=654e83ef&hm=7bd863fb9fe70afe83d39e37ac52b3793f94e74e35bbdf5892523cff243deb05&)
+![](https://cdn.discordapp.com/attachments/880457086016847882/1172618343870631997/ezgif-4-9a24d782f6.gif?ex=6560f8ef&is=654e83ef&hm=7bd863fb9fe70afe83d39e37ac52b3793f94e74e35bbdf5892523cff243deb05&)
+
